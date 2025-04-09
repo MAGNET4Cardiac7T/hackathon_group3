@@ -1,5 +1,6 @@
 from src.costs.base import BaseCost
-from src.optimizers import DummyOptimizer
+from src.costs import B1HomogeneityCost, B1HomogeneityMinMaxCost
+from src.optimizers import DummyOptimizer, TorchOptimizer
 from src.data import Simulation, CoilConfig
 
 import numpy as np
@@ -32,7 +33,7 @@ def run(
         cost_function: Cost function object
         timeout: Time (in seconds) after which the evaluation script will be terminated
     """
-    optimizer = DummyOptimizer(cost_function=cost_function)
+    optimizer = TorchOptimizer(cost_function=cost_function)
     try:
         with timeout_limit(timeout):
             best_coil_config = optimizer.optimize(simulation)
@@ -40,3 +41,13 @@ def run(
         print("Optimization process timed out.")
         best_coil_config = None  # Or handle it as per your requirements
     return best_coil_config
+
+
+if __name__ == "__main__":
+    # Example usage
+    simulation = Simulation(path="./data/simulations/children_3_tubes_10_id_6299.h5")
+    cost_function = (
+        B1HomogeneityCost()
+    )  # Replace with actual cost function initialization
+    best_coil_config = run(simulation, cost_function, timeout=100)
+    print(best_coil_config)
