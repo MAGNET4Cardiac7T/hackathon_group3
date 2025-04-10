@@ -33,7 +33,9 @@ def run(
         cost_function: Cost function object
         timeout: Time (in seconds) after which the evaluation script will be terminated
     """
-    optimizer = TorchOptimizer(cost_function=cost_function)
+    optimizer = TorchOptimizer(
+        cost_function=cost_function, downsampling_factor=2, max_iter=1000
+    )
     best_coil_config = optimizer.optimize(simulation)
     """
     try:
