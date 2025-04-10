@@ -1,7 +1,20 @@
 from .data import CoilConfig, Simulation
 from .costs.base import BaseCost
-
 from typing import Dict, Any
+import torch
+
+def to_jsonable(value):
+    if isinstance(value, torch.Tensor):
+        if value.dim() == 0:
+            return value.item()  # scalar
+        else:
+            return value.tolist()
+    elif isinstance(value, list):
+        return [to_jsonable(v) for v in value]
+    elif isinstance(value, dict):
+        return {k: to_jsonable(v) for k, v in value.items()}
+    else:
+        return value
 
 def evaluate_coil_config(coil_config: CoilConfig, 
                          simulation: Simulation,
@@ -26,20 +39,22 @@ def evaluate_coil_config(coil_config: CoilConfig,
     default_coil_config_cost = cost_function(simulation_data_default)
     best_coil_config_cost = cost_function(simulation_data)
 
-    # Calculate cost improvement
-    cost_improvement_absolute = (default_coil_config_cost - best_coil_config_cost)
-    cost_improvement_relative = (best_coil_config_cost - default_coil_config_cost) / default_coil_config_cost
+    # Cost improvements
+    cost_improvement_absolute = default_coil_config_cost - best_coil_config_cost
+    cost_improvement_relative = (
+        (best_coil_config_cost - default_coil_config_cost) / default_coil_config_cost
+    )
 
-    # Create a dictionary to store the results
     result = {
-        "best_coil_phase": list(coil_config.phase),
-        "best_coil_amplitude": list(coil_config.amplitude),
-        "best_coil_config_cost": best_coil_config_cost,
-        "default_coil_config_cost": default_coil_config_cost,
-        "cost_improvement_absolute": cost_improvement_absolute,
-        "cost_improvement_relative": cost_improvement_relative,
+        "best_coil_phase": to_jsonable(coil_config.phase),
+        "best_coil_amplitude": to_jsonable(coil_config.amplitude),
+        "best_coil_config_cost": to_jsonable(best_coil_config_cost),
+        "default_coil_config_cost": to_jsonable(default_coil_config_cost),
+        "cost_improvement_absolute": to_jsonable(cost_improvement_absolute),
+        "cost_improvement_relative": to_jsonable(cost_improvement_relative),
         "cost_function_name": cost_function.__class__.__name__,
         "cost_function_direction": cost_function.direction,
         "simulation_data": simulation_data.simulation_name,
     }
+
     return result
