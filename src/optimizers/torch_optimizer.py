@@ -22,6 +22,16 @@ class TorchOptimizer(BaseOptimizer):
         phase = torch.rand(8, requires_grad=True, dtype=torch.double)
         amplitude = torch.rand(8, requires_grad=True, dtype=torch.double)
 
+        # cp init
+        phase = torch.ones((8), requires_grad=True, dtype=torch.double)
+        amplitude = torch.ones((8), requires_grad=True, dtype=torch.double)
+
+        with torch.no_grad():
+            amplitude[:] = 1. / np.sqrt(8.)
+            for i in range(8):
+                phase[i] = torch.pi / 4.* i
+
+
         # Define the optimizer and pass the parameters
         optimizer = self.optimizer_class([phase, amplitude], lr=self.lr)
 

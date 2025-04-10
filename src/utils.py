@@ -19,7 +19,8 @@ def to_jsonable(value):
 def evaluate_coil_config(coil_config: CoilConfig, 
                          simulation: Simulation,
                          cost_function: BaseCost,
-                         return_B1 = False) -> Dict[str, Any]:
+                         return_B1 = True,
+                         return_SAR = True) -> Dict[str, Any]:
     """
     Evaluates the coil configuration using the cost function.
 
@@ -37,8 +38,8 @@ def evaluate_coil_config(coil_config: CoilConfig,
     simulation_data_default = simulation(default_coil_config)
 
     # Calculate cost for both configurations
-    default_coil_config_cost, B1map_default = cost_function(simulation_data_default, simulation, return_B1 = return_B1)
-    best_coil_config_cost, B1map_bestConfig = cost_function(simulation_data, simulation, return_B1 = return_B1)
+    default_coil_config_cost, B1map_default, SAR_default = cost_function(simulation_data_default, simulation, return_B1 = return_B1, return_SAR = return_SAR)
+    best_coil_config_cost, B1map_bestConfig, SAR_bestConfig = cost_function(simulation_data, simulation, return_B1 = return_B1, return_SAR = return_SAR)
 
 
     # Cost improvements
@@ -59,4 +60,4 @@ def evaluate_coil_config(coil_config: CoilConfig,
         "simulation_data": simulation_data.simulation_name,
     }
 
-    return result, B1map_default, B1map_bestConfig
+    return result, B1map_default, B1map_bestConfig, SAR_default, SAR_bestConfig

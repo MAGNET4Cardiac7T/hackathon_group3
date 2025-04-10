@@ -11,7 +11,7 @@ class B1HomogeneityCost(BaseCost):
         self.direction = "maximize"
         self.b1_calculator = B1Calculator()
 
-    def calculate_cost(self, simulation_data: SimulationData, simulation, return_B1 = False) -> float:
+    def calculate_cost(self, simulation_data: SimulationData, simulation, return_B1 = False, return_SAR = False) -> float:
         b1_field = self.b1_calculator(simulation_data)
         subject = simulation_data.subject
 
@@ -20,4 +20,7 @@ class B1HomogeneityCost(BaseCost):
         if return_B1 == False:
             return torch.mean(b1_field_subject_voxels) / torch.std(b1_field_subject_voxels)
         else:
-            return (torch.mean(b1_field_subject_voxels)/torch.std(b1_field_subject_voxels)), b1_field_abs
+            if return_SAR == False:
+                return (torch.mean(b1_field_subject_voxels)/torch.std(b1_field_subject_voxels)), b1_field_abs
+            else:
+                return (torch.mean(b1_field_subject_voxels)/torch.std(b1_field_subject_voxels)), b1_field_abs, 0
