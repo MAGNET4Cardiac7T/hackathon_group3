@@ -37,7 +37,7 @@ class TorchOptimizer(BaseOptimizer):
             # Forward pass: simulate and compute cost
             coil_config = CoilConfig(phase=phase, amplitude=amplitude)
             simulation_data = simulation(coil_config)
-            cost = self.cost_function(simulation_data)
+            cost = self.cost_function(simulation_data, simulation, return_B1 = False)
 
             if self.direction == "maximize":
                 cost_to_optimize = -cost  # Negate cost for maximization

@@ -34,12 +34,15 @@ def run(
         timeout: Time (in seconds) after which the evaluation script will be terminated
     """
     optimizer = TorchOptimizer(cost_function=cost_function)
+    best_coil_config = optimizer.optimize(simulation)
+    """
     try:
         with timeout_limit(timeout):
             best_coil_config = optimizer.optimize(simulation)
     except TimeoutError:
         print("Optimization process timed out.")
         best_coil_config = None  # Or handle it as per your requirements
+    """
     return best_coil_config
 
 
