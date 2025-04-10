@@ -3,28 +3,8 @@ from src.costs import B1HomogeneityCost, B1HomogeneityMinMaxCost
 from src.optimizers import DummyOptimizer, TorchOptimizer, MultiStartTorchOptimizer
 from src.data import Simulation, CoilConfig
 
-import numpy as np
 
-import signal
-from contextlib import contextmanager
-
-
-@contextmanager
-def timeout_limit(seconds):
-    def signal_handler(signum, frame):
-        raise TimeoutError("Function execution exceeded the timeout limit.")
-
-    signal.signal(signal.SIGALRM, signal_handler)
-    signal.alarm(seconds)
-    try:
-        yield
-    finally:
-        signal.alarm(0)
-
-
-def run(
-    simulation: Simulation, cost_function: BaseCost, timeout: int = 100
-) -> CoilConfig:
+def run(simulation: Simulation, cost_function: BaseCost) -> CoilConfig:
     """
     Main function to run the optimization, returns the best coil configuration
 
@@ -51,15 +31,3 @@ def run(
         best_coil_config = None  # Or handle it as per your requirements
     """
     return best_coil_config
-
-
-if __name__ == "__main__":
-    # Example usage
-    simulation = Simulation(
-        path="/home/pfrang/linux_projects/magnet_spring_school/hackathon_group3/data/simulations/children_1_tubes_6_id_23713.h5"
-    )
-    cost_function = (
-        B1HomogeneityCost()
-    )  # Replace with actual cost function initialization
-    best_coil_config = run(simulation, cost_function, timeout=100)
-    print(best_coil_config)

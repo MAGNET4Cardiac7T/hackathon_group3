@@ -111,9 +111,4 @@ class TorchOptimizer(BaseOptimizer):
                 best_coil_config = coil_config
                 pbar.set_postfix_str(f"Best cost {best_cost:.2f}")
 
-        print(f"Final cost on downsampled: {best_cost} ")
-
-        cost_original = self.cost_function(simulation(best_coil_config))
-        print(f"Final cost on original: {cost_original} ")
-
         return best_coil_config
