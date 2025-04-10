@@ -3,6 +3,7 @@ from .costs.base import BaseCost
 from typing import Dict, Any
 import torch
 
+
 def to_jsonable(value):
     if isinstance(value, torch.Tensor):
         if value.dim() == 0:
@@ -16,11 +17,10 @@ def to_jsonable(value):
     else:
         return value
 
-def evaluate_coil_config(coil_config: CoilConfig, 
-                         simulation: Simulation,
-                         cost_function: BaseCost,
-                         return_B1 = True,
-                         return_SAR = True) -> Dict[str, Any]:
+
+def evaluate_coil_config(
+    coil_config: CoilConfig, simulation: Simulation, cost_function: BaseCost
+) -> Dict[str, Any]:
     """
     Evaluates the coil configuration using the cost function.
 
@@ -38,16 +38,16 @@ def evaluate_coil_config(coil_config: CoilConfig,
     simulation_data_default = simulation(default_coil_config)
 
     # Calculate cost for both configurations
-    default_coil_config_cost, B1map_default, SAR_default = cost_function(simulation_data_default, simulation, return_B1 = return_B1, return_SAR = return_SAR)
-    best_coil_config_cost, B1map_bestConfig, SAR_bestConfig = cost_function(simulation_data, simulation, return_B1 = return_B1, return_SAR = return_SAR)
+    default_coil_config_cost = cost_function(simulation_data_default)
+    best_coil_config_cost = cost_function(simulation_data)
 
-
-    # Cost improvements
+    # Calculate cost improvement
     cost_improvement_absolute = default_coil_config_cost - best_coil_config_cost
     cost_improvement_relative = (
-        (best_coil_config_cost - default_coil_config_cost) / default_coil_config_cost
-    )
+        best_coil_config_cost - default_coil_config_cost
+    ) / default_coil_config_cost
 
+    # Create a dictionary to store the results
     result = {
         "best_coil_phase": to_jsonable(coil_config.phase),
         "best_coil_amplitude": to_jsonable(coil_config.amplitude),
@@ -59,5 +59,4 @@ def evaluate_coil_config(coil_config: CoilConfig,
         "cost_function_direction": cost_function.direction,
         "simulation_data": simulation_data.simulation_name,
     }
-
-    return result, B1map_default, B1map_bestConfig, SAR_default, SAR_bestConfig
+    return result

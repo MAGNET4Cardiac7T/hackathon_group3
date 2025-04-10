@@ -10,10 +10,8 @@ class BaseCost(ABC):
             "maximize",
         ], f"Invalid direction: {self.direction}"
 
-    def __call__(
-        self, simulation_data: SimulationData, return_B1=False, return_SAR=False
-    ) -> float:
-        return self.calculate_cost(simulation_data, return_B1, return_SAR)
+    def __call__(self, simulation_data: SimulationData) -> float:
+        return self.calculate_cost(simulation_data)
 
     @abstractmethod
     def calculate_cost(self, simulation_data: SimulationData) -> float:

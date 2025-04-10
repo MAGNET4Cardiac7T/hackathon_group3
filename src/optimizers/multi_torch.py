@@ -7,12 +7,13 @@ from tqdm import trange
 import numpy as np
 from .base import BaseOptimizer
 from .init_values import cp_init, init_cp_and_random
+from .tensor_b1_homogeneity import TensorB1HomogeneityCost
 
 
 class MultiStartTorchOptimizer(BaseOptimizer):
     def __init__(
         self,
-        cost_function,
+        cost_function=TensorB1HomogeneityCost(),
         lr=0.01,
         max_iter_explore=100,
         max_iter=100,
@@ -35,7 +36,7 @@ class MultiStartTorchOptimizer(BaseOptimizer):
         best_cost = -np.inf if self.direction == "maximize" else np.inf
         best_coil_config = None
 
-        init_values = init_cp_and_random(num_starts=10)
+        init_values = init_cp_and_random(num_starts=self.num_starts)
 
         for start, (phase, amplitude) in enumerate(init_values):
             print(f"Starting optimization run {start}/{self.num_starts}")
@@ -65,7 +66,7 @@ class MultiStartTorchOptimizer(BaseOptimizer):
                 optimizer.zero_grad()
                 coil_config = CoilConfig(phase=phase, amplitude=amplitude)
                 simulation_data = downsampled_simulation(coil_config)
-                cost = self.cost_function(simulation_data, return_B1=False)
+                cost = self.cost_function(simulation_data)
 
                 if self.direction == "maximize":
                     cost_to_optimize = -cost
@@ -97,8 +98,7 @@ class MultiStartTorchOptimizer(BaseOptimizer):
             optimizer.zero_grad()
             coil_config = CoilConfig(phase=phase, amplitude=amplitude)
             simulation_data = downsampled_simulation(coil_config)
-            cost = self.cost_function(simulation_data, return_B1=False)
-
+            cost = self.cost_function(simulation_data)
             if self.direction == "maximize":
                 cost_to_optimize = -cost
             else:
@@ -126,7 +126,7 @@ class MultiStartTorchOptimizer(BaseOptimizer):
             optimizer.zero_grad()
             coil_config = CoilConfig(phase=phase, amplitude=amplitude)
             simulation_data = simulation(coil_config)
-            cost = self.cost_function(simulation_data, return_B1=False)
+            cost = self.cost_function(simulation_data)
 
             if self.direction == "maximize":
                 cost_to_optimize = -cost
