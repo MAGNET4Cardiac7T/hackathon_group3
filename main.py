@@ -35,10 +35,11 @@ def run(
     """
     optimizer = MultiStartTorchOptimizer(
         cost_function=cost_function,
+        lr=0.05703665874030897,
         downsampling_factor=2,
         max_iter_explore=20,
         num_starts=10,
-        max_iter_downsampled=800,
+        max_iter_downsampled=865,
         max_iter=100,
     )
     best_coil_config = optimizer.optimize(simulation)
