@@ -14,6 +14,7 @@ def run(simulation: Simulation, cost_function: BaseCost) -> CoilConfig:
         timeout: Time (in seconds) after which the evaluation script will be terminated
     """
     optimizer = MultiStartTorchOptimizer(
+        cost_function=cost_function,
         downsampling_factor=2,
         max_iter_explore=20,
         num_starts=10,
